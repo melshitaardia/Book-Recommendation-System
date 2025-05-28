@@ -1,80 +1,103 @@
-# Laporan Proyek Machine Learning - Nama Anda
+# Laporan Proyek Machine Learning - Melshita Ardia Kirana
 
 ## Project Overview
 
-Pada bagian ini, Kamu perlu menuliskan latar belakang yang relevan dengan proyek yang diangkat.
+Sistem rekomendasi telah menjadi elemen penting dalam banyak aplikasi digital, termasuk platform pembelian buku online. Banyaknya pilihan buku membuat pengguna memerlukan bantuan untuk menemukan buku yang relevan dengan minat mereka.
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Jelaskan mengapa dan bagaimana masalah tersebut harus diselesaikan
-- Menyertakan hasil riset terkait atau referensi. Referensi yang diberikan harus berasal dari sumber yang kredibel dan author yang jelas.
-- Format Referensi dapat mengacu pada penulisan sitasi [IEEE](https://journals.ieeeauthorcenter.ieee.org/wp-content/uploads/sites/7/IEEE_Reference_Guide.pdf), [APA](https://www.mendeley.com/guides/apa-citation-guide/) atau secara umum seperti [di sini](https://penerbitdeepublish.com/menulis-buku-membuat-sitasi-dengan-mudah/)
-- Sumber yang bisa digunakan [Scholar](https://scholar.google.com/)
+Proyek ini bertujuan untuk membangun **sistem rekomendasi buku yang dipersonalisasi** berdasarkan data rating dan metadata dari pengguna dan buku, menggunakan pendekatan *collaborative filtering berbasis deep learning*.
+
+Sistem rekomendasi ini dibangun dengan memanfaatkan dataset Book-Crossing yang memuat interaksi antara pengguna dan buku. Model yang digunakan didesain untuk mempelajari representasi (embedding) pengguna dan buku, sehingga mampu merekomendasikan buku yang relevan dan belum pernah dibaca oleh pengguna tersebut.
 
 ## Business Understanding
 
-Pada bagian ini, Anda perlu menjelaskan proses klarifikasi masalah.
-
-Bagian laporan ini mencakup:
-
 ### Problem Statements
 
-Menjelaskan pernyataan masalah:
-- Pernyataan Masalah 1
-- Pernyataan Masalah 2
-- Pernyataan Masalah n
+- Bagaimana membangun sistem rekomendasi buku berdasarkan interaksi pengguna sebelumnya?
+- Bagaimana sistem dapat memberikan rekomendasi yang relevan untuk pengguna yang belum pernah memberi rating pada banyak buku?
+- Bagaimana membuat sistem rekomendasi yang tidak hanya mengandalkan popularitas umum, tetapi memperhatikan preferensi unik tiap pengguna?
 
 ### Goals
 
-Menjelaskan tujuan proyek yang menjawab pernyataan masalah:
-- Jawaban pernyataan masalah 1
-- Jawaban pernyataan masalah 2
-- Jawaban pernyataan masalah n
+- Menghasilkan rekomendasi buku yang sesuai dengan preferensi pengguna berdasarkan rating sebelumnya.
+- Membangun model rekomendasi dengan pendekatan *collaborative filtering* yang mampu menghasilkan **top-N recommendation** untuk pengguna.
+- Menyediakan sistem yang dapat membantu pengguna menemukan buku yang belum pernah mereka eksplorasi sebelumnya.
 
-Semua poin di atas harus diuraikan dengan jelas. Anda bebas menuliskan berapa pernyataan masalah dan juga goals yang diinginkan.
+### Solution Approach
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Menambahkan bagian “Solution Approach” yang menguraikan cara untuk meraih goals. Bagian ini dibuat dengan ketentuan sebagai berikut: 
-
-    ### Solution statements
-    - Mengajukan 2 atau lebih solution approach (algoritma atau pendekatan sistem rekomendasi).
+#### Solution Statements
+- **Collaborative Filtering berbasis Deep Learning**: menggunakan arsitektur neural network embedding untuk memahami hubungan antara pengguna dan buku berdasarkan data rating.
+- (Opsional untuk perluasan): **Content-based Filtering** jika ingin memanfaatkan metadata buku seperti genre atau penulis di masa mendatang.
 
 ## Data Understanding
-Paragraf awal bagian ini menjelaskan informasi mengenai jumlah data, kondisi data, dan informasi mengenai data yang digunakan. Sertakan juga sumber atau tautan untuk mengunduh dataset. Contoh: [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Restaurant+%26+consumer+data).
 
-Selanjutnya, uraikanlah seluruh variabel atau fitur pada data. Sebagai contoh:  
+Dataset yang digunakan adalah [Book-Crossing Dataset (BX-Books, BX-Users, BX-Ratings)](https://www.kaggle.com/datasets/ruchi798/bookcrossing-dataset), yang terdiri dari tiga komponen:
+- `BX-Books.csv`: informasi metadata buku seperti ISBN, judul, dan penulis.
+- `BX-Users.csv`: informasi pengguna seperti user ID, lokasi, dan usia.
+- `BX-Ratings.csv`: rating eksplisit yang diberikan pengguna terhadap buku.
 
-Variabel-variabel pada Restaurant UCI dataset adalah sebagai berikut:
-- accepts : merupakan jenis pembayaran yang diterima pada restoran tertentu.
-- cuisine : merupakan jenis masakan yang disajikan pada restoran.
-- dst
+### Jumlah Data
+- Jumlah rating: 1.149.780 entri
+- Jumlah buku: 271.379
+- Jumlah pengguna: 278.858
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data beserta insight atau exploratory data analysis.
+### Fitur Penting
+- `user_id`: ID pengguna
+- `isbn`: ID buku
+- `book_title`: Judul buku
+- `book_author`: Nama penulis
+- `location`: Lokasi pengguna
+- `age`: Usia pengguna
+- `rating`: Rating dari pengguna terhadap buku (skala 1–10)
 
 ## Data Preparation
-Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan proses data preparation yang dilakukan
-- Menjelaskan alasan mengapa diperlukan tahapan data preparation tersebut.
+Langkah-langkah preprocessing dan data preparation yang dilakukan:
+
+1. **Pembersihan data duplikat**: menghapus entri duplikat pada BX-Users dan BX-Books.
+2. **Pembersihan rating 0**: hanya mempertahankan rating eksplisit (> 0).
+3. **Filtering pengguna dan buku**: hanya mempertahankan pengguna yang memberikan ≥10 rating, dan buku yang menerima ≥5 rating.
+4. **Label encoding user_id dan isbn**: mengubah ke bentuk numerik untuk keperluan embedding.
+5. **Normalisasi rating**: rating dinormalisasi ke rentang [0, 1] untuk digunakan sebagai target dalam training.
 
 ## Modeling
-Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menyajikan dua solusi rekomendasi dengan algoritma yang berbeda.
-- Menjelaskan kelebihan dan kekurangan dari solusi/pendekatan yang dipilih.
+Model rekomendasi dibangun menggunakan pendekatan **Collaborative Filtering dengan Neural Network**:
+
+- Menggunakan embedding layer untuk `user_id` dan `book_id`.
+- Menggabungkan embedding dan melewatkannya ke hidden layers.
+- Arsitektur:
+  - Embedding user dan item masing-masing ukuran 50.
+  - 2 hidden layer: Dense(128) → Dropout(0.3) → Dense(64) → Dropout(0.3)
+  - Output layer: Dense(1) (regresi untuk rating)
+- Fungsi aktivasi: ReLU
+- Optimizer: Adam
+- Loss function: Mean Squared Error (MSE)
+- Metode evaluasi: Root Mean Squared Error (RMSE) dan Mean Absolute Error (MAE)
+
+### Top-N Recommendation
+Model dilatih dan digunakan untuk menghasilkan rekomendasi **Top-10 buku** untuk user ID `276762`, berdasarkan prediksi tertinggi dari buku yang belum pernah dirating oleh pengguna tersebut.
 
 ## Evaluation
-Pada bagian ini Anda perlu menyebutkan metrik evaluasi yang digunakan. Kemudian, jelaskan hasil proyek berdasarkan metrik evaluasi tersebut.
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
+Model dievaluasi menggunakan data validasi dan data uji. Metrik evaluasi:
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+- **Root Mean Squared Error (RMSE)**:
+  \[
+  RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+  \]
+- **Mean Absolute Error (MAE)**:
+  \[
+  MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+  \]
 
-**---Ini adalah bagian akhir laporan---**
+### Hasil Evaluasi
+- RMSE (testing): sekitar **1.02**
+- MAE (testing): sekitar **0.82**
+
+Model menunjukkan performa cukup baik untuk sistem rekomendasi berbasis rating skala 1–10.
+
+---
 
 _Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+- Laporan ini berdasarkan proyek sistem rekomendasi buku dengan dataset publik dari Kaggle, dibangun menggunakan TensorFlow dan scikit-learn.
+- Top-N recommendation telah disajikan dan bisa diperluas untuk integrasi ke platform web atau aplikasi pembaca buku.

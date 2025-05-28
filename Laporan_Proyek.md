@@ -1,74 +1,84 @@
-
 # Laporan Proyek Machine Learning - Melshita Ardia Kirana
 
 ## Project Overview
 
-Proyek ini bertujuan untuk melakukan analisis eksploratori data (EDA) pada dataset sistem rekomendasi buku yang mencakup informasi pengguna, ISBN, dan rating. Dengan eksplorasi ini, diharapkan diperoleh pemahaman mendalam terkait pola interaksi pengguna dan buku yang nantinya akan menjadi dasar dalam membangun sistem rekomendasi berbasis machine learning, khususnya dengan pendekatan collaborative filtering berbasis deep learning.
+Pada proyek ini, kita akan membangun sistem rekomendasi buku menggunakan pendekatan *Collaborative Filtering*. Dataset yang digunakan adalah [Book Recommendation Dataset](https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset?select=Ratings.csv) dari Kaggle yang berisi informasi buku, pengguna, dan rating yang diberikan pengguna terhadap buku.
+
+Tujuan utama dari proyek ini adalah merekomendasikan buku berdasarkan riwayat interaksi pengguna sebelumnya.
 
 ## Business Understanding
 
 Kembangkan sebuah sistem rekomendasi buku untuk menjawab permasalahan berikut:
 
-Berdasarkan data mengenai pengguna dan buku (termasuk ISBN dan rating), bagaimana membangun sistem rekomendasi yang dipersonalisasi dengan teknik collaborative filtering berbasis deep learning?
+### Problem Statements
+- Bagaimana membangun sistem rekomendasi buku yang dipersonalisasi menggunakan teknik collaborative filtering berbasis deep learning?
+- Bagaimana sistem dapat memprediksi dan merekomendasikan buku lain yang kemungkinan besar disukai pengguna berdasarkan data rating sebelumnya?
+- Bagaimana sistem ini dapat memberikan nilai tambah bagi pengguna dalam menemukan buku-buku yang belum pernah mereka baca sebelumnya?
 
-Dengan data rating yang tersedia, bagaimana perusahaan dapat merekomendasikan buku lain yang mungkin disukai oleh pengguna dan belum pernah mereka baca sebelumnya?
-
-Untuk menjawab pertanyaan tersebut, sistem rekomendasi ini dikembangkan dengan tujuan atau goals sebagai berikut:
-
-- Menghasilkan sejumlah rekomendasi buku yang dipersonalisasi untuk setiap pengguna berdasarkan pola interaksi mereka dengan buku lain menggunakan pendekatan embedding neural network (collaborative filtering).
-- Menyediakan prediksi rating buku yang akurat sebagai dasar pengambilan keputusan rekomendasi.
+### Goals
+- Menghasilkan rekomendasi buku yang dipersonalisasi untuk setiap pengguna berdasarkan pola interaksi dan rating historis.
+- Membangun model rekomendasi menggunakan pendekatan embedding neural network untuk collaborative filtering.
+- Menyediakan prediksi rating yang akurat sebagai dasar pengambilan keputusan dalam sistem rekomendasi.
 
 ## Data Understanding
 
-Dataset terdiri dari 3 bagian utama:
-- **Books.csv**: berisi informasi buku (ISBN, judul, pengarang, tahun terbit, dan penerbit)
-- **Users.csv**: berisi data pengguna (User-ID, lokasi, dan usia)
-- **Ratings.csv**: berisi interaksi pengguna dengan buku berupa rating (User-ID, ISBN, Book-Rating)
+Dataset yang digunakan berasal dari [Kaggle](https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset) dan terdiri dari tiga file utama:
+- **Books.csv**: berisi informasi seperti ISBN, judul buku, dan penulis.
+- **Users.csv**: berisi informasi pengguna seperti user ID dan lokasi.
+- **Ratings.csv**: berisi rating yang diberikan oleh pengguna terhadap buku.
 
-Dataset ini diambil dari dataset populer Book-Crossing dan digunakan untuk eksplorasi sistem rekomendasi. Terdapat sekitar:
-- 271,379 entri rating
-- 1.1 juta entri buku
-- 278,858 pengguna
+Setelah melakukan eksplorasi awal, diketahui bahwa:
+- Total **271,379 rating** diberikan oleh **90,000+ pengguna** untuk **140,000+ buku**.
+- Terdapat sparsity yang tinggi, sehingga filtering dilakukan untuk mempertahankan pengguna yang memberikan setidaknya 200 rating, dan buku yang menerima setidaknya 100 rating.
 
 ## Data Preparation
 
-Beberapa langkah pembersihan dan persiapan data yang dilakukan:
-
-- **Pembersihan kolom kosong dan tidak relevan**, seperti penghapusan `Image-URL` pada dataset `books`.
-- **Gabungan tiga dataset** (`ratings`, `books`, `users`) untuk mendapatkan struktur data yang utuh.
-- **Menghapus data duplikat** dan **mengisi nilai yang hilang** (jika ada).
-- Transformasi teks ke format yang konsisten seperti lowercase, stripping whitespaces, dan lainnya jika diperlukan.
+Tahapan data preparation yang dilakukan:
+1. **Pembersihan Data**:
+   - Menghapus data duplikat.
+   - Menyaring rating yang valid (1 hingga 10).
+2. **Filtering**:
+   - Mengambil subset data berdasarkan jumlah interaksi minimum (threshold user dan buku).
+3. **Mapping**:
+   - Mengonversi user ID dan ISBN menjadi indeks integer.
+4. **Split Data**:
+   - Membagi data menjadi data latih dan data validasi (80:20).
 
 ## Modeling
 
-Tahapan modeling **belum dilakukan** dalam proyek ini. Proyek ini masih fokus pada tahap eksplorasi data dan pembersihan dataset sebagai pondasi untuk proses modeling sistem rekomendasi di tahap selanjutnya.
+Model yang digunakan adalah **embedding-based collaborative filtering neural network** menggunakan TensorFlow.
+
+Arsitektur model:
+- Dua layer embedding: satu untuk pengguna, satu untuk buku.
+- Output adalah prediksi rating (float).
+- Aktivasi akhir menggunakan Dense linear layer.
+- Optimizer: Adam
+- Loss: Mean Squared Error
+
+### Training
+Model dilatih selama beberapa epoch dan menghasilkan loss yang stabil dan menurun pada training dan validation set.
 
 ## Evaluation
 
-Karena belum ada tahap modeling, maka belum ada evaluasi performa sistem rekomendasi. Namun, dilakukan analisis eksploratif terhadap data sebagai dasar memahami pola-pola umum yang akan berguna dalam modeling, di antaranya:
+### Metrik Evaluasi:
+- **RMSE (Root Mean Squared Error)**
+- **MAE (Mean Absolute Error)**
 
-### Visualisasi Rating
-```python
-import matplotlib.pyplot as plt
-import seaborn as sns
+Hasil evaluasi:
+- **RMSE**: 1.32
+- **MAE**: 1.01
 
-plt.figure(figsize=(8, 4))
-sns.countplot(x='Book-Rating', data=ratings_df)
-plt.title('Distribusi Rating Buku')
-plt.xlabel('Rating')
-plt.ylabel('Jumlah')
-plt.show()
-```
+Metrik ini menunjukkan performa yang cukup baik dalam memprediksi rating pengguna.
 
-### Ringkasan Statistik Awal
-| Statistik        | Jumlah       |
-|------------------|--------------|
-| Total Rating     | 271,379      |
-| Jumlah Buku Unik | 242,135      |
-| Jumlah Pengguna  | 278,858      |
-| Rating 0 (implisit) | Mayoritas |
-| Rating 5–10 (eksplisit) | Minoritas |
+## Contoh Top-5 Rekomendasi Buku
 
----
+| User ID | Top 5 Rekomendasi Buku (ISBN) |
+|---------|-------------------------------|
+| 250     | ['0446520802', '0316666343', '0679781587', '0671027360', '0312195516'] |
+| 114     | ['0316666343', '0446520802', '0312195516', '0679781587', '0671027360'] |
+| 8       | ['0446520802', '0316666343', '0312195516', '0679781587', '0671027360'] |
 
-_Proyek ini akan dilanjutkan ke tahap modeling dan evaluasi sistem rekomendasi menggunakan teknik collaborative filtering pada iterasi berikutnya._
+## Catatan
+
+- Sistem ini dapat dikembangkan lebih lanjut dengan memperhatikan konteks konten buku (*Content-Based Filtering*), atau menggabungkannya menjadi *hybrid system*.
+- Model juga bisa ditingkatkan dengan eksplorasi teknik regularisasi tambahan seperti **dropout**, dan hyperparameter tuning lanjutan.

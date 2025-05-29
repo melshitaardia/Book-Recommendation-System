@@ -111,17 +111,23 @@ Model dilatih menggunakan MSE loss dan Adam optimizer, lalu dievaluasi dengan RM
 
 Model cukup baik dalam mengenali pola, meskipun masih bisa ditingkatkan.
 
-### Top-5 Rekomendasi untuk User-ID 276762
+### Top-10 Rekomendasi untuk User-ID 276798
 
 | Judul Buku | ISBN | Prediksi Rating |
 |------------|------|------------------|
-| *All-American Girl* | 0060294698 | 5.24 |
-| *Love You Forever* | 0920668372 | 5.05 |
-| *The Lorax* | 0394823370 | 5.02 |
-| *The Night the Bear Ate Goombaw* | 0805013407 | 4.97 |
-| *The Watchers Guide Buffy The Vampire Slayer* | 0671024337 | 4.79 |
+| *Harry Potter and the Chamber of Secrets Postcard Book* | 0439425220 | 4.68 |
+| *There's Treasure Everywhere--A Calvin and Hobbes Collection* | 0836213122 | 3.80 |
+| *Die unendliche Geschichte: Von A bis Z* | 3522128001 | 3.68 |
+| *Unknown Title* | 0091842050 | 3.62 |
+| *Hope for the Flowers* | 0809117541 | 3.62 |
+| *Blood Debt (Daw Book Collectors)* | 0886777399 | 3.61 |
+| *The Grasshopper Trap* | 0805001115 | 3.58 |
+| *UN Viejo Que Leia Novelas De Amor / The Old Man Who Read Love Stories* | 8472236552 | 3.49 |
+| *Blind Assassin* | 0747549370 | 3.46 |
+| *Romeo and Juliet (Bantam Classic)* | 0553213059 | 3.45 |
 
 ---
+
 
 ## Evaluation & Conclusion
 
